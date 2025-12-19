@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>แด่คุณ... ในปีใหม่นี้</title>
+
+    <!-- Import Google Fonts: Noto Serif Thai for elegance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- Canvas for Starry Background & Fireworks -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Main Content -->
+    <main class="container" id="click-area">
+      <div class="message-box" id="message-box">
+        <p class="message-text" id="text-content">Loading...</p>
+      </div>
+
+      <!-- Finale Container -->
+      <div class="finale-box" id="finale-box">
+        <h1 class="finale-title">HAPPY NEW YEAR</h1>
+        <h2 class="finale-year" id="year-text">2026</h2>
+      </div>
+
+      <!-- Buttons Container -->
+      <div class="btn-container" id="btn-container">
+        <button class="action-btn" id="restart-btn">
+          ดูอีกรอบ
+        </button>
+        <button class="action-btn ai-btn" id="ai-wish-btn">
+          ✨ ขอพรเลยจร้าาา
+        </button>
+      </div>
+
+      <div class="hint" id="hint-text">แตะที่หน้าจอเพื่อไปต่อ</div>
+    </main>
+
+    <!-- AI Modal -->
+    <div class="ai-modal" id="ai-modal">
+      <div class="ai-content">
+        <h3 class="ai-title">บอกเล่าความในใจถึงปีนี้...</h3>
+        <input
+          type="text"
+          class="ai-input"
+          id="user-feeling"
+          placeholder="เช่น หวังเรื่องงาน, เหนื่อยจัง, ความรัก"
+          autocomplete="off"
+        />
+        <button
+          class="action-btn ai-btn"
+          id="generate-btn"
+          style="width: 100%; opacity: 1; transform: none"
+        >
+          <span class="loading-spinner" id="spinner"></span>
+          รับคำอวยพร
+        </button>
+        <button class="close-modal" id="close-modal">ยกเลิก</button>
+      </div>
+    </div>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>
