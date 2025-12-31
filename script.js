@@ -7,11 +7,11 @@ const messages = [
     "เราอาจจะรู้จักกันดี<br>หรืออาจแค่ผ่านกันในโลกออนไลน์<br>แค่อยากให้รู้ว่าในช่วงเวลานี้<br>คุณไม่ได้อยู่ตรงนี้คนเดียว",
     "ปีที่ผ่านมานี้<br>คุณพยายามมากกว่าที่ใครหลายคนเห็น<br>แม้บางวันจะไม่มั่นใจ<br>แม้บางอย่างจะยังไม่สำเร็จ",
     "ขอให้เป้าหมายในชีวิตชัดเจน<br>และก้าวไปถึงได้ในแบบที่คุณต้องการ",
-    "ขอให้ความรัก<br>ไม่ทำให้คุณต้องฝืนเป็นใคร<br>ขอให้เป็นพื้นที่ปลอดภัย<br>ไม่ว่าจะมาจากใครก็ตาม",
-    "หากปีนี้คุณยังไปไม่ถึงจุดที่หวัง<br>นั่นไม่ได้แปลว่าคุณล้มเหลว<br>แต่มันแปลว่าคุณยังมีชีวิตอยู่",
-    "ขอให้ความพยายามทั้งหมด<br>ไม่หายไปกับกาลเวลา<br>แต่กลายเป็นแรงเล็ก ๆ<br>ที่พาคุณไปต่อ",
-    "จงส่งต่อความพยายามนั้น",
-    "ไปสู่วันพรุ่งนี้",
+    "ขอให้ความรัก<br>ของคุณเบ่งบาน<br>ขอให้มันเป็นพื้นที่ปลอดภัย<br>ไม่ว่าจะมาจากใครก็ตาม",
+    "หากปีนี้คุณยังไปไม่ถึงจุดที่หวัง<br>นั่นไม่ได้แปลว่าคุณล้มเหลว<br>แต่มันแปลว่าคุณยังมีชีวิตอยู่และยังทำมันต่อไป",
+    "ขอให้ความพยายามทั้งหมด<br>ไม่หายไปกับกาลเวลา<br>แต่กลายเป็นแรงเล็กๆ<br>ที่พาคุณไปต่อ",
+    "ขอให้ให้ส่งต่อความพยายามนั้น",
+    "ไปถึงวันพรุ่งนี้",
     "สุขสันต์วันปีใหม่<br>ขอให้ปีนี้ใจดีกับคุณ<br>ในแบบที่ปีที่แล้วทำไม่ได้"
 ];
 
@@ -427,6 +427,103 @@ function animate() {
     }
     requestAnimationFrame(animate);
 }
+
+function openAIModal() {
+            isAIModalOpen = true;
+            aiModal.classList.add('visible');
+            userFeelingInput.value = '';
+            userFeelingInput.focus();
+        }
+
+        function closeAIModal() {
+            isAIModalOpen = false;
+            aiModal.classList.remove('visible');
+        }
+
+        async function generateAIWish() {
+            const input = userFeelingInput.value.trim();
+            if (!input) return;
+
+            // UI Loading State
+            generateBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            generateBtn.childNodes[2].textContent = ' กำลังฟังเสียงดวงดาว...'; // Change text safely
+
+            try {
+                // Construct the prompt
+                const prompt = `You are a gentle, emotional poet. Write a short, encouraging New Year greeting in Thai language for someone who is feeling or hoping for: "${input}". 
+                
+                Rules:
+                1. Length: 3 to 4 lines maximum.
+                2. Tone: Warm, hopeful, elegant, emotional (similar to "healing" quotes).
+                3. Format: Use <br> tags for line breaks. Do NOT use markdown. Do NOT use quotes.
+                4. Content: Acknowledge their feeling gently and offer hope for the new year.`;
+
+                // Call Gemini API
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: prompt }]
+                        }]
+                    })
+                });
+
+                if (!response.ok) throw new Error('API Error');
+
+                const data = await response.json();
+                const aiText = data.candidates[0].content.parts[0].text;
+
+                // Success! Close modal and show text
+                closeAIModal();
+                displayCustomMessage(aiText);
+
+            } catch (error) {
+                console.error(error);
+                alert("ขออภัย ดวงดาวสื่อสารขัดข้อง ลองใหม่อีกครั้งนะ");
+            } finally {
+                // Reset UI
+                generateBtn.disabled = false;
+                spinner.style.display = 'none';
+                generateBtn.childNodes[2].textContent = 'รับคำอวยพร';
+            }
+        }
+
+        function displayCustomMessage(text) {
+            // Hide finale elements temporarily
+            finaleBox.classList.remove('visible');
+            restartBtn.classList.remove('visible');
+            aiWishBtn.classList.remove('visible');
+            btnContainer.classList.remove('active');
+            enableFireworks = false; // Pause fireworks focus
+
+            // Show message box with AI text
+            setTimeout(() => {
+                messageBox.style.display = 'block';
+                textContent.innerHTML = text;
+                messageBox.classList.remove('fade-out');
+                void messageBox.offsetWidth;
+                messageBox.classList.add('visible');
+            }, 1000);
+
+            // After reading (e.g., 8 seconds), go back to finale
+            setTimeout(() => {
+                messageBox.classList.remove('visible');
+                messageBox.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    messageBox.style.display = 'none';
+                    finaleBox.classList.add('visible');
+                    enableFireworks = true;
+                    btnContainer.classList.add('active');
+                    restartBtn.classList.add('visible');
+                    aiWishBtn.classList.add('visible');
+                }, 1200);
+            }, 8000);
+        }
 
 window.addEventListener('resize', () => { resize(); initParticles(); });
 resize(); initParticles(); animate();
